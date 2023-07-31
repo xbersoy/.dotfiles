@@ -1,0 +1,117 @@
+[gpg]
+pubkey_url = "https://github.com/xbersoy.gpg"
+fingerprint = "CD9BBE28A8A361890CE259FBED10AA39"
+
+[git.init]
+default_branch = "master"
+
+[git.user]
+name = "Burak Ersoy"
+email = "burakersoy@msn.com"
+signing_key = "CD9BBE28A8A361890CE259FBED10AA39"
+
+[git.commit]
+gpgsign = "false"
+
+[prefs]
+editor = "nvim"
+visual = "nvim"
+
+[fonts]
+antialiasing = true
+antialiasing_type = "subpixel"
+hinting = true
+hintstyle = "hintslight"
+lcdfilter = "lcddefault"
+font_mscore = true
+font_croscore = true
+font_crosextra = true
+font_source_code_pro = true
+
+[dependencies]
+anki = false
+zeal = true
+faas = false
+meld = false
+brave = true
+broot = true
+geary = false
+totem = false
+docker = true
+evince = false
+zathura = true
+flatpak = true
+newsboat = true
+difftastic = true
+whispercpp = true
+libreoffice = false
+taskwarrior = true
+sublime_text = true
+simple_scanner = false
+
+[gnome]
+enable_animations = false
+logout_prompt = false
+natural_scroll = true
+static_workspaces = true
+workspace_count = 2
+
+[gnome.desktop]
+icons = false
+clock_format = '24h'
+show_date = true
+show_seconds = false
+show_weekday = true
+
+[gnome.mutter]
+center_new_windows = true
+center_window = "<Super>c"
+
+[gnome.dash_to_dock]
+autohide = true
+position  = "LEFT"
+
+[gnome.pop_cosmic]
+show_application_menu = false
+show_workspaces_button = false
+workspace_picker_left = true
+
+[asdf]
+enabled = true
+lua = true
+ruby = true
+rust = true
+yarn = true
+golang = true
+nodejs = true
+python = true
+postgres = true
+fd = true
+xh = true
+bat = true
+duf = true
+exa = true
+dust = true
+helm = true
+tmux = true
+vale = true
+cheat = true
+delta = true
+doctl = false
+viddy = true
+direnv = true
+neovim = true
+stylua = true
+kubectl = false
+lazygit = true
+ripgrep = true
+lazydocker = true
+shellcheck = true
+github_cli = true
+
+[network]
+ipv6 = false
+
+[hardware.huawei.gxtp7863.touchpad]
+enabled = true
+scrolling_pixel_distance = 50

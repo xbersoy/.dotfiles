@@ -16,6 +16,8 @@ gpgsign = "false"
 [prefs]
 editor = "nvim"
 visual = "nvim"
+dracula_pro = false
+dracula_pro_url = "https://github.com/krmbzds/dracula-pro"
 
 [fonts]
 antialiasing = true
@@ -29,16 +31,30 @@ font_crosextra = true
 font_source_code_pro = true
 
 [dependencies]
+anki = false
+zeal = false
+faas = false
+meld = false
+brave = false
+broot = false
 geary = false
-libreoffice = false
-simple_scanner = false
 totem = false
-evince = false
-broot = true
 docker = true
+evince = false
+zathura = false
 flatpak = true
+newsboat = false
+brave_beta = false
+difftastic = false
+whispercpp = false
+libreoffice = false
+taskwarrior = false
+sublime_text = false
+simple_scanner = false
+signal_messenger = false
 
 [gnome]
+dracula = false
 enable_animations = false
 logout_prompt = false
 natural_scroll = true
@@ -59,11 +75,6 @@ center_window = "<Super>c"
 [gnome.dash_to_dock]
 autohide = true
 position  = "LEFT"
-
-[gnome.pop_cosmic]
-show_application_menu = false
-show_workspaces_button = false
-workspace_picker_left = true
 
 [asdf]
 enabled = true
@@ -91,14 +102,13 @@ viddy = true
 direnv = true
 neovim = true
 stylua = true
+kubectl = false
 lazygit = true
 ripgrep = true
+terraform = false
 lazydocker = true
 shellcheck = true
 github_cli = true
-
-[network]
-ipv6 = false
 
 [hardware.huawei.gxtp7863.touchpad]
 enabled = true

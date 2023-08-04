@@ -1,0 +1,23 @@
+= Dotfiles
+:author: Kerem Bozdas
+:experimental:
+:icons: font
+:autofit-option:
+:source-highlighter: rouge
+:rouge-style: github
+:revdate: 2022-10-15
+
+Set up zsh for Humans:
+[source,sh]
+----
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)"
+----
+
+Apply dotfiles:
+[source,sh]
+----
+sh -c "$(curl -fsSL get.chezmoi.io)" -- init --apply krmbzds
+----
+
+
+Works best on a fresh install of `Pop!_OS 22.04 LTS`.

@@ -165,6 +165,85 @@ font:
 
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: false
+{{ if .prefs.dracula_pro }}
+# Colors
+colors:
+  # Default colors
+  primary:
+    background: '0x22212c'
+    foreground: '0xf8f8f2'
+
+    # Bright and dim foreground colors
+    #
+    # The dimmed foreground color is calculated automatically if it is not present.
+    # If the bright foreground color is not set, or `draw_bold_text_with_bright_colors`
+    # is `false`, the normal foreground color will be used.
+    #dim_foreground: '0x9a9a9a'
+    #bright_foreground: '0xffffff'
+
+  # Cursor colors
+  #
+  # Colors which should be used to draw the terminal cursor. If these are unset,
+  # the cursor color will be the inverse of the cell color.
+  cursor:
+    text: '0x454158'
+    cursor: '0xf8f8f2'
+
+  # Selection colors
+  #
+  # Colors which should be used to draw the selection area. If selection
+  # background is unset, selection color will be the inverse of the cell colors.
+  # If only text is unset the cell text color will remain the same.
+  selection:
+    text: '0xf8f8f2'
+    background: '0x454158'
+
+  # Normal colors
+  normal:
+    black:   '0x22212c'
+    red:     '0xff9580'
+    green:   '0x8aff80'
+    yellow:  '0xffff80'
+    blue:    '0x9580ff'
+    magenta: '0xff80bf'
+    cyan:    '0x80ffea'
+    white:   '0xf8f8f2'
+
+  # Bright colors
+  bright:
+    black:   '0x22212c'
+    red:     '0xffaa99'
+    green:   '0xa2ff99'
+    yellow:  '0xffff99'
+    blue:    '0xaa99ff'
+    magenta: '0xff99cc'
+    cyan:    '0x99ffee'
+    white:   '0xffffff'
+
+  # Dim colors
+    #
+    # If the dim colors are not set, they will be calculated automatically based
+    # on the `normal` colors.
+    #dim:
+    #  black:   '0x000000'
+    #  red:     '0x8c3336'
+    #  green:   '0x7a8530'
+    #  yellow:  '0x97822e'
+    #  blue:    '0x506d8f'
+    #  magenta: '0x80638e'
+    #  cyan:    '0x497e7a'
+    #  white:   '0x9a9a9a'
+
+  # Indexed Colors
+  #
+  # The indexed colors include all colors from 16 to 256.
+  # When these are not set, they're filled with sensible defaults.
+  #
+  # Example:
+  #   `- { index: 16, color: '0xff00ff' }`
+  #
+  indexed_colors: []
+{{ end }}
 # Visual Bell
 #
 # Any time the BEL code is received, Alacritty "rings" the visual bell. Once

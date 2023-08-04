@@ -81,28 +81,6 @@ function wait_for_apt() {
   done
 }
 
-function compile_libsecret() {
-  lib_path=/usr/share/doc/git/contrib/credential/libsecret
-  if [ ! -f "$lib_path/git-credential-libsecret" ]; then
-    wait_for_apt && sudo apt -y install libsecret-1-dev
-    wait_for_apt && sudo make --directory=$lib_path
-    wait_for_apt && sudo apt -y purge libsecret-1-dev
-  fi
-}
-
-function configure_touchpad_scrolling_pixel_distance() {
-  {{ if .hardware.huawei.gxtp7863.touchpad.enabled }}
-    if xinput list | grep -q "GXTP7863:00 27C6:01E8 Touchpad"; then
-      touchpad_id=$(xinput list | grep -i "GXTP7863:00 27C6:01E8 Touchpad" | sed 's/.*id=\([0-9]*\).*/\1/')
-      xinput set-prop "$touchpad_id" "libinput Scrolling Pixel Distance" {{ .hardware.huawei.gxtp7863.touchpad.scrolling_pixel_distance }}
-    else
-      true
-    fi
-  {{ else }}
-    true
-  {{ end }}
-}
-
 function configure_docker_postinstall() {
   {{ if .dependencies.docker }}
     if ! [ "$(getent group docker)" ]; then
@@ -123,9 +101,6 @@ install_font_meslo
 install_font_source_code_pro
 install_font_mscore
 rebuild_font_cache
-compile_libsecret
 configure_docker_postinstall
-configure_touchpad_scrolling_pixel_distance
-enable_service pcscd
 
 {{ end }}

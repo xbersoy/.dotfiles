@@ -1,9 +1,28 @@
 alias clear=z4h-clear-screen-soft-bottom
-
+{{ if lookPath "git" -}}
+alias gd='git diff'
+{{ if lookPath "gs" -}}
+function gs() {
+  if [[ $# -ne 0 ]]; then
+    command gs "$@"
+  else
+    git show
+  fi
+}
+{{ end -}}
+alias glo='git log --decorate --oneline --graph'
+alias glg='git log --decorate --graph --abbrev-commit --date=relative'
+alias gdh='git diff HEAD'
+alias gds='git diff --staged'
+alias gst='git status'
+{{ if lookPath "difft" -}}
+alias gdt='GIT_EXTERNAL_DIFF=difft INLINE=y git diff'
+alias gss='GIT_EXTERNAL_DIFF=difft INLINE=y git show --ext-diff'
+{{ end -}}
 if [[ "$EDITOR" = 'nvim' ]]; then
 alias vimdiff='nvim -d'
 fi
-
+{{ end -}}
 {{ if lookPath "exa" -}}
 alias tree='exa -Ta'
 alias l='exa -F'
@@ -15,8 +34,25 @@ alias tree='tree -a -I .git'
 alias ls="${aliases[ls]:-ls} -A"
 {{ end -}}
 
+{{ if lookPath "fdfind" -}}
+alias fd='fdfind'
+{{ end -}}
+
 {{ if lookPath "somafm" -}}
 alias radio="somafm list | fzf | awk '{print $1}' | xargs somafm play --quality=highest"
+{{ end -}}
+
+{{ if lookPath "newsboat" -}}
+for i in y t f g d l; do
+  filepath="{{ .chezmoi.homeDir }}/.config/newsboat/urls-$i"
+  if test -f "$filepath"; then
+    eval "alias nb$i='newsboat -u $filepath -c $filepath.db'"
+  fi
+done
+{{ end -}}
+
+{{ if (and (lookPath "faas-cli") (eq .chezmoi.hostname "workstation")) -}}
+alias faas="OPENFAAS_TEMPLATE_STORE_URL='https://git.io/J8174' faas-cli"
 {{ end -}}
 
 {{ if (and (lookPath "docker") (lookPath "mobynuker")) -}}
@@ -47,76 +83,25 @@ alias pbpaste='xclip -selection clipboard -o'
 alias upgrade='sudo apt update && sudo apt list --upgradable && sudo apt upgrade && sudo apt autopurge && sudo apt autoclean {{- if lookPath "flatpak" }} && flatpak update && flatpak uninstall --unused {{- end -}}'
 {{ end -}}
 
+{{ if lookPath "taskwarrior-tui" -}}
+alias t='taskwarrior-tui'
+{{ end -}}
+
+{{ if lookPath "jekyll" -}}
+function jekyll() {
+  if [[ "$1" == "compose" ]]; then
+    shift
+    command bundle exec jekyll compose --extension adoc "$@"
+  else
+    command bundle exec jekyll "$@"
+  fi
+}
+{{ end -}}
+
+{{ if lookPath "batman" -}}
+alias man=batman
+{{ end -}}
+
 {{ if lookPath "wget" -}}
 alias wget='wget --hsts-file={{- .chezmoi.homeDir -}}/.local/share/wget-hsts'
 {{ end -}}
-
-alias zshconfig="nano ~/.zshrc"
-alias ohmyzsh="nano ~/.oh-my-zsh"
-alias zprf="nano ~/.zprofile"
-alias zlgn="nano ~/.zlogin"
-alias aconf="nano ~/.aliases"
-alias sors=".  ~/.zshrc"
-alias wttr="curl wttr.in/istanbul"
-alias stest="networkQuality -v"
-
-alias penvconf="nano ~/.env.parasut"
-
-alias ibrew="arch -x86_64 /usr/local/bin/brew"
-alias mbrew="arch -arm64e /opt/homebrew/bin/brew"
-alias bss="brew services start"
-alias bsr="brew services restart"
-alias bsstop="brew services stop"
-alias bsl="brew services list"
-alias brw="brew install"
-alias bru="brew uninstall"
-
-alias kmts="cd ~/atlastek/kmts"
-alias kmtsw="cd ~/atlastek/kmts-web"
-alias idis="cd ~/atlastek/idis"
-alias idisw="cd ~/atlastek/idis-web"
-alias kmtswi="cd ~/atlastek/kmts-web-importmap"
-
-alias yres="yarn run ember serve"
-alias yi="yarn install"
-alias bwr="bower install"
-alias bi="bundle install"
-alias nuke="bin/nuke"
-alias rs="rails s"
-alias mig="rails db:migrate"
-alias red="RAILS_ENV=development"
-alias ret="RAILS_ENV=test"
-alias rdbd="rails db:drop"
-alias rdbc="rails db:create"
-alias kiq="bundle exec sidekiq -C config/sidekiq.yml"
-alias gard="bundle exec guard"
-
-alias hrrc="heroku run rails console"
-alias hlt="heroku logs --tail"
-
-alias gfo="git fetch origin"
-alias gpl="git pull"
-alias gco="git checkout"
-alias gcb="git checkout -b"
-alias gl="git log"
-alias gs="git status"
-alias gb="git branch"
-alias gbd="git branch -D"
-alias ga="git add"
-alias gc="git commit"
-alias gp="git push"
-alias gpf="git push --force"
-alias gr="git rebase"
-alias grc="git rebase --continue"
-alias gra="git rebase --abort"
-alias gst="git stash"
-alias gsts="git stash show"
-alias gstp="git stash pop"
-alias gcl="git clone"
-
-alias cdp="cd ~/Documents/Projects/"
-alias sors=".  ~/.zshrc"
-alias nu="nvm use"
-alias ru="rvm use"
-alias ni="nvm install"
-alias ri="rvm install"

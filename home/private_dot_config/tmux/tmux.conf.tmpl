@@ -35,6 +35,11 @@ bind j select-pane -D
 bind k select-pane -U
 bind l select-pane -R
 
+{{ if .dependencies.whispercpp -}}
+# Use whisper.cpp to transcribe speech
+bind v run-shell "popup stt | tmux load-buffer - ; tmux paste-buffer"
+{{ end -}}
+
 # Use vim-style resize keys
 bind -r H resize-pane -L 5
 bind -r J resize-pane -D 5
@@ -63,12 +68,27 @@ set -g @nova-pane-justify "left"
 set -g @extrakto_copy_key "tab"
 set -g @extrakto_insert_key "enter"
 
+{{ if .prefs.dracula_pro -}}
+set -g "@nova-pane-active-border-style" "#22212C"
+set -g "@nova-pane-border-style" "#22212C"
+set -g "@nova-status-style-bg" "#2E2B3B"
+set -g "@nova-status-style-fg" "#7971A9"
+set -g "@nova-status-style-active-bg" "#393649"
+set -g "@nova-status-style-active-fg" "#F8F8F2"
+{{ end -}}
+
 set -g @nova-segments-0-left "mode"
 set -g @nova-segment-mode "#{?client_prefix,#[fg=white]λ,#S}"
+{{ if .prefs.dracula_pro -}}
+set -g @nova-segment-mode-colors "#7971A9 #2E2B3B"
+{{ end -}}
 
 set -g status-right-length 200
 set -g @nova-segments-0-right "time"
 set -g @nova-segment-time "#({{- .chezmoi.homeDir -}}/bin/utc)"
+{{ if .prefs.dracula_pro -}}
+set -g @nova-segment-time-colors "#2E2B3B #7971A9"
+{{ end -}}
 
 # Other examples:
 # set -g @plugin 'github_username/plugin_name'

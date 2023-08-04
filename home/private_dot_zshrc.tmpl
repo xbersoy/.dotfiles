@@ -40,6 +40,11 @@ zstyle ':z4h:fzf-complete' recurse-dirs 'yes'
 zstyle ':z4h:direnv' enable 'yes'
 {{- end }}
 
+{{ if .prefs.dracula_pro -}}
+# Customize fzf theme
+zstyle ':z4h:*' fzf-flags --color='fg:-1,bg:-1,hl:#99ffee,fg+:#ffffff,bg+:#2e2b3b,hl+:#ff99cc,info:#7970a9,prompt:#8aff80,pointer:#ff99cc,marker:#ff80bf,spinner:#80ffea,header:#aa99ff'
+{{- end }}
+
 # Enable ('yes') or disable ('no') automatic teleportation of z4h over
 # ssh when connecting to these hosts.
 zstyle ':z4h:ssh:raspberrypi.local'   enable 'yes'
@@ -88,6 +93,9 @@ zle -N edit-command-line
 z4h source ~/.env.zsh
 {{ if .asdf.enabled -}}
 z4h source ~/.asdf/asdf.sh
+{{- end }}
+{{ if .prefs.dracula_pro -}}
+z4h source ~/.config/zsh/syntax-theme.sh
 {{- end }}
 {{ if .dependencies.broot -}}
 z4h source ~/.config/broot/launcher/bash/br

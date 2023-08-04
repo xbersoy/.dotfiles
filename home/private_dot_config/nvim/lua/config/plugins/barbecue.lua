@@ -29,7 +29,7 @@ function M.config()
       return ""
     end,
     -- theme to be used which should be located under `barbecue.theme` module
-    theme = "auto", -- `auto` defaults to your current colorscheme
+    theme = "dracula", -- `auto` defaults to your current colorscheme
     show_modified = false, -- whether to replace file icon with the modified symbol when buffer is modified
     symbols = {
       modified = icons.symbols.modified, -- modification indicator

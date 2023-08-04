@@ -41,38 +41,6 @@ function remove_packages() {
 # *                           Manual Installations                           *
 # ****************************************************************************
 
-function install_interception_tools() {
-  {{ if lookPath "intercept" }}
-    true
-  {{ else }}
-    local tempdir
-    tempdir="$(mktemp -d)"
-    git clone "https://gitlab.com/interception/linux/tools.git" "$tempdir"
-    cd "$tempdir"
-    cmake -B build -DCMAKE_BUILD_TYPE=Release
-    cmake --build build
-    cp "$tempdir/build/"{intercept,mux,udevmon,uinput} "{{ .chezmoi.homeDir -}}/bin/"
-    cd -
-    rm -rf "$tempdir"
-    echo "Interception Tools build successful"
-  {{ end }}
-}
-
-function install_dual_function_keys() {
-  {{ if lookPath "dual-function-keys" }}
-    true
-  {{ else }}
-    local tempdir
-    tempdir="$(mktemp -d)"
-    git clone https://gitlab.com/interception/linux/plugins/dual-function-keys.git "$tempdir"
-    cd "$tempdir"
-    make
-    mv dual-function-keys "{{- .chezmoi.homeDir -}}/bin/"
-    cd -
-    rm -rf tempdir
-    echo "dual-function-keys build successful"
-  {{ end }}
-}
 
 function install_alacritty() {
   {{ if lookPath "alacritty" }}
@@ -108,6 +76,7 @@ function install_asdf() {
   {{ end }}
 }
 
+
 # ****************************************************************************
 # *                                   PPAs                                   *
 # ****************************************************************************
@@ -122,7 +91,6 @@ function add_ppa_docker() {
   {{ end }}
 }
 
-
 # ****************************************************************************
 # *                     APT Package Manager Installations                    *
 # ****************************************************************************
@@ -132,9 +100,14 @@ function install_packages() {
 
     at
     bfs
+    cmake
     entr
     gnupg
+    libboost-dev
+    libevdev-dev
     libnotify-bin
+    libudev-dev
+    libyaml-cpp-dev
     pcscd
     scdaemon
     tmux
@@ -200,21 +173,6 @@ function install_packages() {
     containerd.io
     docker-compose
     {{ end }}
-
-    {{ if .dependencies.libreoffice }}
-    libreoffice-gtk3
-    libreoffice-writer
-    libreoffice-calc
-    {{- end }}
-
-    {{ if .fonts.font_croscore }}
-    fonts-croscore
-    {{- end }}
-
-    {{ if .fonts.font_crosextra }}
-    fonts-crosextra-carlito
-    fonts-crosextra-caladea
-    {{- end }}
   )
 
   add_ppa_docker
@@ -226,10 +184,7 @@ function install_packages() {
   wait_for_apt && sudo apt -y autoclean
 
   install_alacritty
-  install_anki
   install_asdf
-  install_interception_tools
-  install_dual_function_keys
 }
 
 # ****************************************************************************

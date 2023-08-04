@@ -15,27 +15,9 @@ function install_and_configure_tpm() {
   fi
 }
 
-function rebuild_bat_cache() {
-  {{ if lookPath "batcat" }}
-  batcat cache --build
-  {{ else if lookPath "bat" }}
-  bat cache --build
-  {{ else }}
-  true
-  {{ end }}
-}
-
 # ****************************************************************************
 # *                                    UI                                    *
 # ****************************************************************************
-
-function disable_desktop_icons_extension() {
-  {{ if .gnome.desktop.icons -}}
-  true
-  {{ else }}
-  gnome-extensions disable "ding@rastersoft.com"
-  {{ end }}
-}
 
 function configure_static_workspaces() {
   {{ if .gnome.static_workspaces }}
@@ -73,21 +55,6 @@ function configure_gnome_dash_to_dock() {
   gsettings set org.gnome.shell.extensions.dash-to-dock dock-position {{ .gnome.dash_to_dock.position  }}
 }
 
-function configure_gnome_pop_cosmic() {
-  gsettings set org.gnome.shell.extensions.pop-cosmic show-application-menu {{ .gnome.pop_cosmic.show_application_menu }}
-  gsettings set org.gnome.shell.extensions.pop-cosmic show-workspaces-button {{ .gnome.pop_cosmic.show_workspaces_button }}
-  gsettings set org.gnome.shell.extensions.pop-cosmic workspace-picker-left {{ .gnome.pop_cosmic.workspace_picker_left }}
-}
-
-function disable_ipv6() {
-  {{ if not .network.ipv6 -}}
-    sudo kernelstub -a "ipv6.disable=1"
-    echo "disable_ipv6: kernelstub changes require reboot to take effect..."
-  {{ else -}}
-  true
-  {{ end -}}
-}
-
 # ****************************************************************************
 # *                                 Defaults                                 *
 # ****************************************************************************
@@ -116,26 +83,16 @@ function update_alternatives() {
   set_alacritty_as_default_terminal_emulator
 }
 
-
 # ****************************************************************************
 # *                                Main Script                               *
 # ****************************************************************************
 
-install_gnome_user_themes_extension || true
 configure_static_workspaces {{ .gnome.workspace_count }}
 set_logout_confirmation_prompt {{ .gnome.logout_prompt }}
 configure_gnome
 configure_gnome_dash_to_dock
-configure_gnome_pop_cosmic
-restart_gnome_shell
-enable_gnome_user_themes_extension
-
-rebuild_bat_cache
 
 install_and_configure_tpm
 update_alternatives
-download_sponsor_times
-
-disable_ipv6
 
 {{ end }}

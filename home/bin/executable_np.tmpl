@@ -1,0 +1,14 @@
+{{- if .asdf.enabled }}
+#!.asdf/shims/python
+{{ else }}
+#!/usr/bin/python3
+{{ end }}
+
+import sys
+from newsplease import NewsPlease
+
+def main():
+    print(NewsPlease.from_url(sys.argv[1], timeout=6).maintext)
+
+if __name__ == "__main__":
+    main()

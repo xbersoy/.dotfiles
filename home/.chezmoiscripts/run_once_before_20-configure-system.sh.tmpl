@@ -1,0 +1,131 @@
+{{- if (and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.name "Pop!_OS")) -}}
+#!/bin/bash
+
+set -e
+
+# ****************************************************************************
+# *                            Service Management                            *
+# ****************************************************************************
+
+function create_udevmon_service() {
+  mkdir -p '{{ .chezmoi.homeDir -}}/.config/interception-tools'
+  echo '{{ template "udevmon_config" . }}' | sudo tee {{ .chezmoi.homeDir -}}/.config/interception-tools/udevmon.yaml > /dev/null
+  echo '{{ template "udevmon_service" . }}' | sudo tee /etc/systemd/system/udevmon.service > /dev/null
+}
+
+function enable_services() {
+  for service; do
+    sudo systemctl enable --now "$service"
+    sudo systemctl try-restart "$service" || sudo systemctl start "$service"
+  done
+}
+
+function enable_service() {
+  enable_services "$1"
+}
+
+function enable_user_services() {
+  for service; do
+    systemctl enable --user --now "$service"
+    systemctl try-restart --user "$service" || systemctl start --user "$service"
+  done
+}
+
+function enable_user_service() {
+  enable_user_services "$1"
+}
+
+# ****************************************************************************
+# *                                   Fonts                                  *
+# ****************************************************************************
+
+function install_font_meslo() {
+  local meslo=(Regular Bold Italic "Bold%20Italic")
+  for i in "${meslo[@]}"; do
+    wget -P ~/.local/share/fonts/ -nv -nc  "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20$i.ttf"
+  done
+  gsettings set org.gnome.desktop.interface monospace-font-name "MesloLGS NF 11"
+}
+
+function install_font_source_code_pro() {
+  {{ if .fonts.font_source_code_pro }}
+    local sourcecodepro=(Black BlackIt Bold BoldIt ExtraLight ExtraLightIt It Light LightIt Medium MediumIt Regular Semibold SemiboldIt)
+    for i in "${sourcecodepro[@]}"; do
+      wget -P ~/.local/share/fonts/ -nv -nc --content-disposition --max-redirect=3 "https://github.com/adobe-fonts/source-code-pro/blob/release/TTF/SourceCodePro-$i.ttf?raw=true"
+    done
+  {{ else }}
+    true
+  {{ end }}
+}
+
+function install_font_mscore() {
+  {{ if .fonts.font_mscore }}
+    echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
+    wait_for_apt && sudo apt -y install ttf-mscorefonts-installer
+  {{ else }}
+    true
+  {{ end }}
+}
+
+function rebuild_font_cache() {
+  fc-cache -f -v
+}
+
+# ****************************************************************************
+# *                               Configuration                              *
+# ****************************************************************************
+
+function wait_for_apt() {
+  while sudo fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
+    sleep 1
+  done
+}
+
+function compile_libsecret() {
+  lib_path=/usr/share/doc/git/contrib/credential/libsecret
+  if [ ! -f "$lib_path/git-credential-libsecret" ]; then
+    wait_for_apt && sudo apt -y install libsecret-1-dev
+    wait_for_apt && sudo make --directory=$lib_path
+    wait_for_apt && sudo apt -y purge libsecret-1-dev
+  fi
+}
+
+function configure_touchpad_scrolling_pixel_distance() {
+  {{ if .hardware.huawei.gxtp7863.touchpad.enabled }}
+    if xinput list | grep -q "GXTP7863:00 27C6:01E8 Touchpad"; then
+      touchpad_id=$(xinput list | grep -i "GXTP7863:00 27C6:01E8 Touchpad" | sed 's/.*id=\([0-9]*\).*/\1/')
+      xinput set-prop "$touchpad_id" "libinput Scrolling Pixel Distance" {{ .hardware.huawei.gxtp7863.touchpad.scrolling_pixel_distance }}
+    else
+      true
+    fi
+  {{ else }}
+    true
+  {{ end }}
+}
+
+function configure_docker_postinstall() {
+  {{ if .dependencies.docker }}
+    if ! [ "$(getent group docker)" ]; then
+      sudo groupadd docker
+      sudo usermod -aG docker "$USER"
+    fi
+    enable_services docker containerd
+  {{ else }}
+    true
+  {{ end }}
+}
+
+# ****************************************************************************
+# *                                Main Script                               *
+# ****************************************************************************
+
+install_font_meslo
+install_font_source_code_pro
+install_font_mscore
+rebuild_font_cache
+compile_libsecret
+configure_docker_postinstall
+configure_touchpad_scrolling_pixel_distance
+enable_service pcscd
+
+{{ end }}

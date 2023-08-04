@@ -29,25 +29,14 @@ font_crosextra = true
 font_source_code_pro = true
 
 [dependencies]
-anki = false
-zeal = true
-faas = false
-meld = false
-brave = true
-broot = true
 geary = false
-totem = false
-docker = true
-evince = false
-zathura = true
-flatpak = true
-newsboat = true
-difftastic = true
-whispercpp = true
 libreoffice = false
-taskwarrior = true
-sublime_text = true
 simple_scanner = false
+totem = false
+evince = false
+broot = true
+docker = true
+flatpak = true
 
 [gnome]
 enable_animations = false
@@ -102,7 +91,6 @@ viddy = true
 direnv = true
 neovim = true
 stylua = true
-kubectl = false
 lazygit = true
 ripgrep = true
 lazydocker = true

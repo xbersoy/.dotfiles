@@ -1,7 +1,55 @@
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
+alias clear=z4h-clear-screen-soft-bottom
+
+if [[ "$EDITOR" = 'nvim' ]]; then
+alias vimdiff='nvim -d'
+fi
+
+{{ if lookPath "exa" -}}
+alias tree='exa -Ta'
+alias l='exa -F'
+alias ll='exa -lF'
+alias la='exa -laF'
+alias exa="${aliases[exa]:-exa} -I .git --git-ignore --git --color=always --color-scale -s=extension --group-directories-first"
+{{ else -}}
+alias tree='tree -a -I .git'
+alias ls="${aliases[ls]:-ls} -A"
+{{ end -}}
+
+{{ if lookPath "somafm" -}}
+alias radio="somafm list | fzf | awk '{print $1}' | xargs somafm play --quality=highest"
+{{ end -}}
+
+{{ if (and (lookPath "docker") (lookPath "mobynuker")) -}}
+function docker() {
+  if [[ "$1" == "nuke" ]]; then
+    command mobynuker
+  else
+    command docker "$@"
+  fi
+}
+{{ end -}}
+
+{{ if (and (lookPath "cheat") (lookPath "tldr")) -}}
+function cheat() {
+  command cheat "$@" || tldr "$1" || curl -fsSL "https://cheat.sh/$1"
+}
+function tldr() {
+  command tldr "$@" || cheat "$1" || curl -fsSL "https://cheat.sh/$1"
+}
+{{ end -}}
+
+{{ if lookPath "xclip" -}}
+alias pbcopy='xclip -selection clipboard'
+alias pbpaste='xclip -selection clipboard -o'
+{{ end -}}
+
+{{- if (eq .chezmoi.osRelease.name "Pop!_OS") -}}
+alias upgrade='sudo apt update && sudo apt list --upgradable && sudo apt upgrade && sudo apt autopurge && sudo apt autoclean {{- if lookPath "flatpak" }} && flatpak update && flatpak uninstall --unused {{- end -}}'
+{{ end -}}
+
+{{ if lookPath "wget" -}}
+alias wget='wget --hsts-file={{- .chezmoi.homeDir -}}/.local/share/wget-hsts'
+{{ end -}}
 
 alias zshconfig="nano ~/.zshrc"
 alias ohmyzsh="nano ~/.oh-my-zsh"
@@ -42,7 +90,6 @@ alias rdbd="rails db:drop"
 alias rdbc="rails db:create"
 alias kiq="bundle exec sidekiq -C config/sidekiq.yml"
 alias gard="bundle exec guard"
-
 
 alias hrrc="heroku run rails console"
 alias hlt="heroku logs --tail"

@@ -1,0 +1,141 @@
+{{- if (and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.name "Pop!_OS")) -}}
+#!/bin/bash
+
+set -e
+
+# ****************************************************************************
+# *                             Config Functions                             *
+# ****************************************************************************
+
+function install_and_configure_tpm() {
+  . {{ .chezmoi.homeDir }}/.asdf/asdf.sh && asdf reshim tmux
+  if [ ! -d "{{ .chezmoi.homeDir }}/.local/share/tmux/plugins/tpm" ]; then
+    git clone https://github.com/tmux-plugins/tpm {{ .chezmoi.homeDir -}}/.local/share/tmux/plugins/tpm
+    TMUX_PLUGIN_MANAGER_PATH="{{ .chezmoi.homeDir -}}/.local/share/tmux/plugins/tpm" {{ .chezmoi.homeDir -}}/.local/share/tmux/plugins/tpm/scripts/install_plugins.sh || rm -rf {{ .chezmoi.homeDir -}}/.local/share/tmux/plugins/tpm
+  fi
+}
+
+function rebuild_bat_cache() {
+  {{ if lookPath "batcat" }}
+  batcat cache --build
+  {{ else if lookPath "bat" }}
+  bat cache --build
+  {{ else }}
+  true
+  {{ end }}
+}
+
+# ****************************************************************************
+# *                                    UI                                    *
+# ****************************************************************************
+
+function disable_desktop_icons_extension() {
+  {{ if .gnome.desktop.icons -}}
+  true
+  {{ else }}
+  gnome-extensions disable "ding@rastersoft.com"
+  {{ end }}
+}
+
+function configure_static_workspaces() {
+  {{ if .gnome.static_workspaces }}
+    gsettings set org.gnome.mutter dynamic-workspaces false
+    gsettings set org.gnome.desktop.wm.preferences num-workspaces "$1"
+
+    for i in $(seq "$1"); do
+      gsettings set org.gnome.shell.keybindings switch-to-application-"$i"  "[]"
+      gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-"$i"  "['<Super>$i']"
+      gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-"$i"  "['<Super><Shift>$i']"
+    done
+  {{ else }}
+    true
+  {{ end }}
+}
+
+function set_logout_confirmation_prompt() {
+  gsettings set org.gnome.SessionManager logout-prompt "$1"
+}
+
+function configure_gnome() {
+  gsettings set org.gnome.desktop.interface enable-animations {{ .gnome.enable_animations }}
+  gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll {{ .gnome.natural_scroll }}
+  gsettings set org.gnome.desktop.peripherals.mouse natural-scroll {{ .gnome.natural_scroll }}
+  gsettings set org.gnome.mutter center-new-windows {{ .gnome.mutter.center_new_windows }}
+  gsettings set org.gnome.desktop.wm.keybindings move-to-center "['{{- .gnome.mutter.center_window -}}']"
+  gsettings set org.gnome.desktop.interface clock-format "{{- .gnome.desktop.clock_format -}}"
+  gsettings set org.gnome.desktop.interface clock-show-date {{ .gnome.desktop.show_date }}
+  gsettings set org.gnome.desktop.interface clock-show-seconds {{ .gnome.desktop.show_seconds }}
+  gsettings set org.gnome.desktop.interface clock-show-weekday {{ .gnome.desktop.show_weekday }}
+}
+
+function configure_gnome_dash_to_dock() {
+  gsettings set org.gnome.shell.extensions.dash-to-dock autohide {{ .gnome.dash_to_dock.autohide }}
+  gsettings set org.gnome.shell.extensions.dash-to-dock dock-position {{ .gnome.dash_to_dock.position  }}
+}
+
+function configure_gnome_pop_cosmic() {
+  gsettings set org.gnome.shell.extensions.pop-cosmic show-application-menu {{ .gnome.pop_cosmic.show_application_menu }}
+  gsettings set org.gnome.shell.extensions.pop-cosmic show-workspaces-button {{ .gnome.pop_cosmic.show_workspaces_button }}
+  gsettings set org.gnome.shell.extensions.pop-cosmic workspace-picker-left {{ .gnome.pop_cosmic.workspace_picker_left }}
+}
+
+function disable_ipv6() {
+  {{ if not .network.ipv6 -}}
+    sudo kernelstub -a "ipv6.disable=1"
+    echo "disable_ipv6: kernelstub changes require reboot to take effect..."
+  {{ else -}}
+  true
+  {{ end -}}
+}
+
+# ****************************************************************************
+# *                                 Defaults                                 *
+# ****************************************************************************
+
+function set_neovim_as_default_editor() {
+  {{ if (and .asdf.enabled .asdf.neovim (eq .prefs.editor "nvim")) }}
+  local default="{{ .chezmoi.homeDir }}/.asdf/shims/nvim"
+  sudo update-alternatives --install /usr/bin/vi vi "$default" 60
+  sudo update-alternatives --install /usr/bin/vim vim "$default" 60
+  sudo update-alternatives --install /usr/bin/editor editor "$default" 60
+  {{ else }}
+  true
+  {{ end }}
+}
+
+function set_alacritty_as_default_terminal_emulator() {
+  {{ if lookPath "alacritty" }}
+  sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/bin/alacritty 60
+  {{ else }}
+  true
+  {{ end }}
+}
+
+function update_alternatives() {
+  set_neovim_as_default_editor
+  set_alacritty_as_default_terminal_emulator
+}
+
+
+# ****************************************************************************
+# *                                Main Script                               *
+# ****************************************************************************
+
+install_gnome_user_themes_extension || true
+configure_static_workspaces {{ .gnome.workspace_count }}
+set_logout_confirmation_prompt {{ .gnome.logout_prompt }}
+configure_gnome
+configure_gnome_dash_to_dock
+configure_gnome_pop_cosmic
+restart_gnome_shell
+enable_gnome_user_themes_extension
+
+rebuild_bat_cache
+
+install_and_configure_tpm
+update_alternatives
+download_sponsor_times
+
+disable_ipv6
+
+{{ end }}

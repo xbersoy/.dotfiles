@@ -122,14 +122,6 @@ function add_ppa_docker() {
   {{ end }}
 }
 
-function add_ppa_libratbag() {
-  {{ if .hardware.logitech.mx_anywhere_2s.enabled }}
-    sudo add-apt-repository -y ppa:libratbag-piper/piper-libratbag-git
-  {{ else }}
-    true
-  {{ end }}
-}
-
 
 # ****************************************************************************
 # *                     APT Package Manager Installations                    *
@@ -226,7 +218,6 @@ function install_packages() {
   )
 
   add_ppa_docker
-  add_ppa_libratbag
 
   wait_for_apt && sudo apt -y update
   wait_for_apt && sudo apt -y upgrade

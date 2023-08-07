@@ -7,12 +7,6 @@ set -e
 # *                            Service Management                            *
 # ****************************************************************************
 
-function create_udevmon_service() {
-  mkdir -p '{{ .chezmoi.homeDir -}}/.config/interception-tools'
-  echo '{{ template "udevmon_config" . }}' | sudo tee {{ .chezmoi.homeDir -}}/.config/interception-tools/udevmon.yaml > /dev/null
-  echo '{{ template "udevmon_service" . }}' | sudo tee /etc/systemd/system/udevmon.service > /dev/null
-}
-
 function enable_services() {
   for service; do
     sudo systemctl enable --now "$service"
